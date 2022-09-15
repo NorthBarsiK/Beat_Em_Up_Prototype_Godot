@@ -1,0 +1,146 @@
+[gd_scene load_steps=22 format=2]
+
+[ext_resource path="res://enemies/enemy1/enemy1.png" type="Texture" id=1]
+[ext_resource path="res://enemies/enemy1/enemy1.gd" type="Script" id=2]
+
+[sub_resource type="CapsuleShape2D" id=1]
+radius = 5.375
+height = 17.75
+
+[sub_resource type="AtlasTexture" id=2]
+atlas = ExtResource( 1 )
+region = Rect2( 0, 0, 48, 48 )
+
+[sub_resource type="AtlasTexture" id=16]
+atlas = ExtResource( 1 )
+region = Rect2( 48, 0, 48, 48 )
+
+[sub_resource type="AtlasTexture" id=17]
+atlas = ExtResource( 1 )
+region = Rect2( 96, 0, 48, 48 )
+
+[sub_resource type="AtlasTexture" id=18]
+atlas = ExtResource( 1 )
+region = Rect2( 0, 0, 48, 48 )
+
+[sub_resource type="AtlasTexture" id=19]
+atlas = ExtResource( 1 )
+region = Rect2( 0, 144, 48, 48 )
+
+[sub_resource type="AtlasTexture" id=20]
+atlas = ExtResource( 1 )
+region = Rect2( 48, 144, 48, 48 )
+
+[sub_resource type="AtlasTexture" id=21]
+atlas = ExtResource( 1 )
+region = Rect2( 96, 144, 48, 48 )
+
+[sub_resource type="AtlasTexture" id=9]
+atlas = ExtResource( 1 )
+region = Rect2( 0, 0, 48, 48 )
+
+[sub_resource type="AtlasTexture" id=10]
+atlas = ExtResource( 1 )
+region = Rect2( 0, 96, 48, 48 )
+
+[sub_resource type="AtlasTexture" id=11]
+atlas = ExtResource( 1 )
+region = Rect2( 48, 96, 48, 48 )
+
+[sub_resource type="AtlasTexture" id=12]
+atlas = ExtResource( 1 )
+region = Rect2( 96, 96, 48, 48 )
+
+[sub_resource type="AtlasTexture" id=13]
+atlas = ExtResource( 1 )
+region = Rect2( 144, 96, 48, 48 )
+
+[sub_resource type="AtlasTexture" id=5]
+atlas = ExtResource( 1 )
+region = Rect2( 0, 48, 48, 48 )
+
+[sub_resource type="AtlasTexture" id=6]
+atlas = ExtResource( 1 )
+region = Rect2( 48, 48, 48, 48 )
+
+[sub_resource type="AtlasTexture" id=7]
+atlas = ExtResource( 1 )
+region = Rect2( 96, 48, 48, 48 )
+
+[sub_resource type="AtlasTexture" id=8]
+atlas = ExtResource( 1 )
+region = Rect2( 144, 48, 48, 48 )
+
+[sub_resource type="SpriteFrames" id=14]
+animations = [ {
+"frames": [ SubResource( 2 ) ],
+"loop": true,
+"name": "idle",
+"speed": 5.0
+}, {
+"frames": [ SubResource( 16 ), SubResource( 17 ), SubResource( 16 ) ],
+"loop": true,
+"name": "wound",
+"speed": 10.0
+}, {
+"frames": [ SubResource( 18 ), SubResource( 19 ), SubResource( 20 ), SubResource( 21 ), SubResource( 21 ), SubResource( 21 ) ],
+"loop": true,
+"name": "strike_2",
+"speed": 15.0
+}, {
+"frames": [ SubResource( 9 ), SubResource( 10 ), SubResource( 11 ), SubResource( 12 ), SubResource( 13 ), SubResource( 13 ), SubResource( 13 ) ],
+"loop": false,
+"name": "strike_1",
+"speed": 15.0
+}, {
+"frames": [ SubResource( 5 ), SubResource( 6 ), SubResource( 7 ), SubResource( 8 ) ],
+"loop": true,
+"name": "run",
+"speed": 5.0
+} ]
+
+[sub_resource type="CircleShape2D" id=15]
+radius = 2.79571
+
+[node name="enemy1" type="KinematicBody2D"]
+z_index = 1
+script = ExtResource( 2 )
+
+[node name="hero_hit_shape" type="CollisionShape2D" parent="."]
+position = Vector2( 0, -14 )
+shape = SubResource( 1 )
+
+[node name="enemy" type="Position2D" parent="."]
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="enemy"]
+position = Vector2( 5, -24 )
+frames = SubResource( 14 )
+animation = "strike_2"
+frame = 3
+playing = true
+
+[node name="strike_1_hit_area" type="Area2D" parent="enemy"]
+collision_layer = 2
+collision_mask = 2
+
+[node name="shape" type="CollisionShape2D" parent="enemy/strike_1_hit_area"]
+position = Vector2( 15.3883, -18.4472 )
+shape = SubResource( 15 )
+
+[node name="strike_2_hit_area2" type="Area2D" parent="enemy"]
+collision_layer = 2
+collision_mask = 2
+
+[node name="shape" type="CollisionShape2D" parent="enemy/strike_2_hit_area2"]
+position = Vector2( 16.8057, -18.4472 )
+shape = SubResource( 15 )
+
+[node name="strike_delay" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="take_damage" from="." to="." method="take_damage"]
+[connection signal="animation_finished" from="enemy/AnimatedSprite" to="." method="stop_animation"]
+[connection signal="frame_changed" from="enemy/AnimatedSprite" to="." method="get_frame"]
+[connection signal="body_exited" from="enemy/strike_1_hit_area" to="." method="attack"]
+[connection signal="body_exited" from="enemy/strike_2_hit_area2" to="." method="attack"]
+[connection signal="timeout" from="strike_delay" to="." method="strike_delay_timeout"]
